@@ -1,11 +1,13 @@
 package com.mikepn.euclsystem.models;
 
 
+import com.mikepn.euclsystem.common.AbstractEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -16,9 +18,10 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder
 @Entity
 @Table(name = "notifications")
-public class Notification {
+public class Notification extends AbstractEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

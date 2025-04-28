@@ -3,11 +3,14 @@ package com.mikepn.euclsystem.controllers;
 import com.mikepn.euclsystem.dtos.requests.auth.LoginDTO;
 import com.mikepn.euclsystem.dtos.requests.auth.PasswordResetDTO;
 import com.mikepn.euclsystem.dtos.requests.auth.PasswordUpdateDTO;
+import com.mikepn.euclsystem.dtos.requests.customer.CreateCustomerDTO;
 import com.mikepn.euclsystem.dtos.requests.user.CreateAdminDTO;
 import com.mikepn.euclsystem.dtos.requests.user.UserResponseDTO;
 import com.mikepn.euclsystem.dtos.response.auth.AuthResponse;
+import com.mikepn.euclsystem.dtos.response.customer.CustomerResponseDTO;
 import com.mikepn.euclsystem.payload.ApiResponse;
 import com.mikepn.euclsystem.services.IAuthService;
+import com.mikepn.euclsystem.services.ICustomerService;
 import com.mikepn.euclsystem.services.IUserService;
 import com.mikepn.euclsystem.utils.ExceptionUtils;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,6 +37,7 @@ public class AuthenticationController {
 
     private final IAuthService authService;
     private final IUserService userService;
+    private final ICustomerService customerService;
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
 
     @Operation(summary = "User login", description = "Authenticates a user and returns access token")
@@ -66,6 +70,17 @@ public class AuthenticationController {
             logger.error("Admin creation failed for: {}", createAdminDTO.getEmail(), e);
             ExceptionUtils.handleResponseException(e);
             return ApiResponse.fail("Failed to create admin", HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @PostMapping("/customer/register")
+    public ResponseEntity<ApiResponse<CustomerResponseDTO>> createCustomer(@Valid @RequestBody CreateCustomerDTO dto) {
+        try {
+            CustomerResponseDTO customer = customerService.createCustomer(dto);
+            return ApiResponse.success("Customer created successfully", HttpStatus.CREATED, customer);
+        } catch (Exception e) {
+            logger.error("Error during  customer creation {}: {}", e.getMessage(), e);
+            return ApiResponse.fail("Failed to create customer", HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 

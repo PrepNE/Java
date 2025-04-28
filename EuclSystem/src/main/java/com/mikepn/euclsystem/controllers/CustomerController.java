@@ -30,16 +30,7 @@ public class CustomerController {
 
     private static final Logger logger = LoggerFactory.getLogger(CustomerController.class);
 
-    @PostMapping
-    public ResponseEntity<ApiResponse<CustomerResponseDTO>> createCustomer(@Valid @RequestBody CreateCustomerDTO dto) {
-        try {
-            CustomerResponseDTO customer = customerService.createCustomer(dto);
-            return ApiResponse.success("Customer created successfully", HttpStatus.CREATED, customer);
-        } catch (Exception e) {
-            logger.error("Error during  customer creation {}: {}", e.getMessage(), e);
-            return ApiResponse.fail("Failed to create customer", HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-    }
+
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")

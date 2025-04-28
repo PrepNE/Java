@@ -8,7 +8,8 @@ public enum IEmailTemplate {
     ACTIVATE_ACCOUNT("verify-account-email"),
     ACCOUNT_VERIFIED("account-verification-successful"),
     PASSWORD_RESET_SUCCESS("password-reset-successful"),
-    ACCOUNT_VERIFICATION("account_verification");
+    ACCOUNT_VERIFICATION("account_verification"),
+    NOTIFICATION("token-notification");
 
     private final String name;
 

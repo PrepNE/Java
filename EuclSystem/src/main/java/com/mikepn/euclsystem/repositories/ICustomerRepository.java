@@ -13,4 +13,7 @@ public interface ICustomerRepository extends JpaRepository<Customer, UUID> {
     boolean existsByProfile_Email(String email);
 
     Optional<Customer> findByProfile(User profile);
+
+    Optional<Customer> findByMeters_MeterNumber(String metersMeterNumber);
+
 }

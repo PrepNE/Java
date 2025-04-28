@@ -31,9 +31,7 @@ public class RegisterUserDTO {
     @NotBlank(message = "Phone number cannot be blank")
     private String phoneNumber;
 
-    @Schema(example = "1234567890123456")
-    @NotBlank(message = "National ID cannot be blank")
-    private String nationalId;
+
 
     @Schema(example = "password@123")
     @NotBlank(message = "Password cannot be blank")

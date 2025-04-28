@@ -19,7 +19,7 @@ import io.swagger.v3.oas.annotations.servers.Server;
                         email="contact@gmail.com",
                         url = "http://localhost:8000/guest"
                 ),
-                description = "OpenApi documentation for Vehicle Tracking Management System",
+                description = "OpenApi documentation for EUCL Token Generator System",
                 title = "OpenApi specification - Mike_pn",
                 license = @License(
                         name = "MIT",

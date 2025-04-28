@@ -69,7 +69,6 @@ public class UserServiceImpl implements IUserService {
                 .firstName(createAdminDTO.getFirstName())
                 .lastName(createAdminDTO.getLastName())
                 .fullName(createAdminDTO.getFirstName() + " " + createAdminDTO.getLastName())
-                .nationalId(createAdminDTO.getNationalId())
                 .phoneNumber(createAdminDTO.getPhoneNumber())
                 .password(passwordEncoder.encode(createAdminDTO.getPassword()))
                 .roles(new HashSet<>(Collections.singletonList(roleService.getRoleByName(ERole.ADMIN))))

@@ -1,11 +1,13 @@
 package com.mikepn.euclsystem.models;
 
+import com.mikepn.euclsystem.common.AbstractEntity;
 import com.mikepn.euclsystem.enums.ETokenStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -14,9 +16,10 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@SuperBuilder
 @Entity
 @Table(name = "purchased_tokens")
-public class PurchasedToken {
+public class PurchasedToken extends AbstractEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
