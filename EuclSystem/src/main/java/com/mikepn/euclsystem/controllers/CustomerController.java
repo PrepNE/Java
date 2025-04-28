@@ -1,22 +1,22 @@
-package com.mikepn.bankingsystem.v1.controller;
+package com.mikepn.euclsystem.controllers;
 
-import com.mikepn.bankingsystem.v1.dto.request.customer.CreateCustomerDTO;
-import com.mikepn.bankingsystem.v1.dto.request.customer.UpdateCustomerDTO;
-import com.mikepn.bankingsystem.v1.dto.response.customer.CustomerResponseDTO;
-import com.mikepn.bankingsystem.v1.models.Customer;
-import com.mikepn.bankingsystem.v1.payload.ApiResponse;
-import com.mikepn.bankingsystem.v1.services.ICustomerService;
+import com.mikepn.euclsystem.dtos.requests.customer.CreateCustomerDTO;
+import com.mikepn.euclsystem.dtos.requests.customer.UpdateCustomerDTO;
+import com.mikepn.euclsystem.dtos.response.customer.CustomerResponseDTO;
+import com.mikepn.euclsystem.models.Customer;
+import com.mikepn.euclsystem.payload.ApiResponse;
+import com.mikepn.euclsystem.services.ICustomerService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
 
@@ -31,7 +31,6 @@ public class CustomerController {
     private static final Logger logger = LoggerFactory.getLogger(CustomerController.class);
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<CustomerResponseDTO>> createCustomer(@Valid @RequestBody CreateCustomerDTO dto) {
         try {
             CustomerResponseDTO customer = customerService.createCustomer(dto);
@@ -55,9 +54,9 @@ public class CustomerController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Page<Customer>>> getAllCustomers(Pageable pageable) {
+    public ResponseEntity<ApiResponse<Page<CustomerResponseDTO>>> getAllCustomers(Pageable pageable) {
         try {
-            Page<Customer> customers = customerService.getAllCustomers(pageable);
+            Page<CustomerResponseDTO> customers = customerService.getAllCustomers(pageable);
             return ApiResponse.success("Customers retrieved successfully", HttpStatus.OK, customers);
         } catch (Exception e) {
             return ApiResponse.fail("Failed to retrieve customers", HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
@@ -65,7 +64,6 @@ public class CustomerController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Customer>> updateCustomer(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateCustomerDTO dto

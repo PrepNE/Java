@@ -113,14 +113,31 @@ public class OwnerServiceImpl implements IOwnerService {
     public Owner updateOwner(UUID id, UpdateOwnerDTO dto) {
         Owner owner = getOwnerById(id);
         User profile = owner.getProfile();
-        profile.setFirstName(dto.getFirstName());
-        profile.setLastName(dto.getLastName());
-        profile.setFullName(dto.getFirstName() + " " + dto.getLastName());
-        owner.setAddress(dto.getAddress());
+
+        if (dto.getFirstName() != null) {
+            profile.setFirstName(dto.getFirstName());
+        }
+
+        if (dto.getLastName() != null) {
+            profile.setLastName(dto.getLastName());
+        }
+
+        if (dto.getFirstName() != null || dto.getLastName() != null) {
+            String fullName = String.format("%s %s",
+                    dto.getFirstName() != null ? dto.getFirstName() : profile.getFirstName(),
+                    dto.getLastName() != null ? dto.getLastName() : profile.getLastName()
+            );
+            profile.setFullName(fullName.trim());
+        }
+
+        if (dto.getAddress() != null) {
+            owner.setAddress(dto.getAddress());
+        }
 
         userRepository.save(profile);
         return ownerRepository.save(owner);
     }
+
 
     @Override
     public void deleteOwner(UUID id) {

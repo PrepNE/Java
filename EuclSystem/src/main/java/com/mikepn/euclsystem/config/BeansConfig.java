@@ -1,4 +1,4 @@
-package com.mikepn.bankingsystem.v1.config;
+package com.mikepn.euclsystem.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

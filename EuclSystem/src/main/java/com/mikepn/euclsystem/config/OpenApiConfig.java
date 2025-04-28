@@ -1,4 +1,6 @@
-package com.mikepn.bankingsystem.v1.config;
+package com.mikepn.euclsystem.config;
+
+
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
@@ -17,7 +19,7 @@ import io.swagger.v3.oas.annotations.servers.Server;
                         email="contact@gmail.com",
                         url = "http://localhost:8000/guest"
                 ),
-                description = "OpenApi documentation for spring security",
+                description = "OpenApi documentation for Vehicle Tracking Management System",
                 title = "OpenApi specification - Mike_pn",
                 license = @License(
                         name = "MIT",

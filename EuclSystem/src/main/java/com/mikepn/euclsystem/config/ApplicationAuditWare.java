@@ -1,9 +1,6 @@
-package com.mikepn.bankingsystem.v1.config;
+package com.mikepn.euclsystem.config;
 
-
-
-import com.mikepn.bankingsystem.v1.models.User;
-import com.mikepn.bankingsystem.v1.security.User.UserPrincipal;
+import com.mikepn.euclsystem.security.user.UserPrincipal;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
