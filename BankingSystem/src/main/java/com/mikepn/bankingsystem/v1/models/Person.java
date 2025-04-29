@@ -28,14 +28,12 @@ public class Person {
 
     private String firstName;
     private String lastName;
-    private String email;
     private String phoneNumber;
     private LocalDate dob;
 
-    public Person(String firstName, String lastName, String email, String phoneNumber) {
+    public Person(String firstName, String lastName, String phoneNumber) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.email = email;
         this.phoneNumber = phoneNumber;
     }
 
