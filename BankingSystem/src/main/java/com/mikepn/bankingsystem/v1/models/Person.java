@@ -1,7 +1,5 @@
 package com.mikepn.bankingsystem.v1.models;
 
-
-import com.mikepn.bankingsystem.v1.common.AbstractEntity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -30,6 +28,7 @@ public class Person {
     private String lastName;
     private String phoneNumber;
     private LocalDate dob;
+
 
     public Person(String firstName, String lastName, String phoneNumber) {
         this.firstName = firstName;

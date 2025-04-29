@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("user")
 @RequiredArgsConstructor
 @Tag(name = "User")
 public class UserController {

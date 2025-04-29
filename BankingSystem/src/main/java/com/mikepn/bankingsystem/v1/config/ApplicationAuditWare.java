@@ -1,4 +1,4 @@
-package com.mikepn.bankingsystem.v1.controller.config;
+package com.mikepn.bankingsystem.v1.config;
 
 
 

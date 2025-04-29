@@ -1,4 +1,4 @@
-package com.mikepn.bankingsystem.v1.controller.config;
+package com.mikepn.bankingsystem.v1.config;
 
 import com.mikepn.bankingsystem.v1.security.jwt.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
