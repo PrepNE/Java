@@ -49,8 +49,13 @@ public class CustomerServiceImpl implements ICustomerService {
             Customer customer = customerHelper.buildCustomer(user);
             customerRepository.save(customer);
 
-            CustomerResponseDTO response = Mapper.getMapper().map(customer, CustomerResponseDTO.class);
-            response.setId(customer.getId());
+            CustomerResponseDTO response = CustomerResponseDTO.builder()
+                    .id(customer.getId())
+                    .fullName(customer.getProfile().getFirstName() + " " + customer.getProfile().getLastName())
+                    .email(customer.getProfile().getEmail())
+                    .phoneNumber(customer.getProfile().getPhoneNumber())
+                    .verified(customer.getProfile().isVerified())
+                    .build();
             return response;
         } catch (Exception e) {
             throw new AppException("Failed to create customer: " + e.getMessage());

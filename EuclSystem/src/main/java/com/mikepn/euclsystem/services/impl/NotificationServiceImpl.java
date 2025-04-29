@@ -9,6 +9,7 @@ import com.mikepn.euclsystem.repositories.INotificationRepository;
 import com.mikepn.euclsystem.repositories.IPurchasedTokenRepository;
 import com.mikepn.euclsystem.services.INotificationService;
 import com.mikepn.euclsystem.standalone.EmailService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,13 +22,14 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class NotificationServiceImpl implements INotificationService {
 
-    private INotificationRepository notificationRepository;
-    private IPurchasedTokenRepository purchasedTokenRepository;
-    private ICustomerRepository customerRepository;
+    private final INotificationRepository notificationRepository;
+    private final IPurchasedTokenRepository purchasedTokenRepository;
+    private final ICustomerRepository customerRepository;
     private final EmailService emailService;
 
 
     @Override
+    @Transactional
     public void checkExpiringTokens() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime fiveHoursFromNow = now.plusHours(5);
@@ -43,20 +45,28 @@ public class NotificationServiceImpl implements INotificationService {
 
 
         for (PurchasedToken token : tokens) {
-            customerRepository.findByMeters_MeterNumber(token.getMeter()).ifPresent(customer -> {
+            String meterNumber = token.getMeter().getMeterNumber();
+            System.out.println("Checking token for meter: " + meterNumber);
+
+            customerRepository.findByMeters_MeterNumber(meterNumber).ifPresent(customer -> {
+                System.out.println("Found customer: " + customer.getProfile().getFirstName() + " " + customer.getProfile().getLastName());
+
+                System.out.println("Customer meters:");
+                customer.getMeters().forEach(meter -> System.out.println("- Meter: " + meter.getMeterNumber()));
+
                 String message = String.format(
                         "Dear %s, REG is pleased to remind you that the token in meter %s is going to expire in 5 hours. Please purchase a new token.",
-                        customer.getProfile().getLastName(), token.getMeter());
+                        customer.getProfile().getLastName(), meterNumber);
 
                 Notification notification = Notification.builder()
                         .issuedDate(LocalDateTime.now())
-                        .meterNumber(token.getMeter())
+                        .meterNumber(meterNumber)
                         .message(message)
                         .build();
 
                 notificationRepository.save(notification);
 
-                try{
+                try {
                     Map<String, Object> vars = new HashMap<>();
                     vars.put("message", message);
 
@@ -67,12 +77,10 @@ public class NotificationServiceImpl implements INotificationService {
                             IEmailTemplate.NOTIFICATION,
                             vars
                     );
-                }catch (Exception e){
+                } catch (Exception e) {
                     throw new RuntimeException("Failed to send notification: " + e.getMessage());
                 }
             });
-
-
         }
 
     }

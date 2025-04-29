@@ -1,6 +1,7 @@
 package com.mikepn.euclsystem.controllers;
 
 
+import com.mikepn.euclsystem.dtos.requests.token.PurchaseTokenRequestDTO;
 import com.mikepn.euclsystem.dtos.response.token.PurchaseTokenResponseDTO;
 import com.mikepn.euclsystem.payload.ApiResponse;
 import com.mikepn.euclsystem.services.IPurchaseTokenService;
@@ -22,7 +23,7 @@ public class PurchaseTokenController {
 
 
     @PostMapping("/purchase")
-    public ResponseEntity<ApiResponse<PurchaseTokenResponseDTO>> purchaseToken(PurchaseTokenResponseDTO dto) {
+    public ResponseEntity<ApiResponse<PurchaseTokenResponseDTO>> purchaseToken(PurchaseTokenRequestDTO dto) {
         try{
             PurchaseTokenResponseDTO response = purchaseTokenService.purchaseToken(dto);
             return ApiResponse.success("Purchase token purchased successfully", HttpStatus.OK, response);

@@ -25,8 +25,10 @@ public class PurchasedToken extends AbstractEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @Column(unique = true, length = 6,nullable = false)
-    private String meter;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "customer_id", nullable = false)
+    private Meter meter;
 
 
     @Column(unique = true, length = 16,nullable = false)
