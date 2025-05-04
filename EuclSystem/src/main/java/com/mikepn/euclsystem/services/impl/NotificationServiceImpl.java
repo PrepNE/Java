@@ -9,8 +9,11 @@ import com.mikepn.euclsystem.repositories.INotificationRepository;
 import com.mikepn.euclsystem.repositories.IPurchasedTokenRepository;
 import com.mikepn.euclsystem.services.INotificationService;
 import com.mikepn.euclsystem.standalone.EmailService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,6 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class NotificationServiceImpl implements INotificationService {
@@ -27,61 +32,46 @@ public class NotificationServiceImpl implements INotificationService {
     private final ICustomerRepository customerRepository;
     private final EmailService emailService;
 
+    @PersistenceContext
+    private final EntityManager entityManager;
+
 
     @Override
     @Transactional
     public void checkExpiringTokens() {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime fiveHoursFromNow = now.plusHours(5);
 
-        List<PurchasedToken> tokens = purchasedTokenRepository.findAll()
-                .stream()
-                .filter(token -> token.getStatus() == ETokenStatus.NEW)
-                .filter(token -> token.getExpirationDate() != null)
-                .filter(token -> {
-                    LocalDateTime exp = token.getExpirationDate();
-                    return exp.isAfter(now) && exp.isBefore(fiveHoursFromNow);
-                }).toList();
+        log.info("📦 Calling stored procedure to generate expiring token notifications...");
+        entityManager.createNativeQuery("CALL check_expiring_tokens_and_notify()").executeUpdate();
 
+        LocalDateTime oneMinuteAgo = LocalDateTime.now().minusMinutes(1);
+        List<Notification> newNotifications = notificationRepository.findByIssuedDateAfter(oneMinuteAgo);
+        log.info("📨 Found {} new notifications to email", newNotifications.size());
 
-        for (PurchasedToken token : tokens) {
-            String meterNumber = token.getMeter().getMeterNumber();
-            System.out.println("Checking token for meter: " + meterNumber);
+        for (Notification notification : newNotifications) {
+            String meterNumber = notification.getMeterNumber();
 
             customerRepository.findByMeters_MeterNumber(meterNumber).ifPresent(customer -> {
-                System.out.println("Found customer: " + customer.getProfile().getFirstName() + " " + customer.getProfile().getLastName());
-
-                System.out.println("Customer meters:");
-                customer.getMeters().forEach(meter -> System.out.println("- Meter: " + meter.getMeterNumber()));
-
-                String message = String.format(
-                        "Dear %s, REG is pleased to remind you that the token in meter %s is going to expire in 5 hours. Please purchase a new token.",
-                        customer.getProfile().getLastName(), meterNumber);
-
-                Notification notification = Notification.builder()
-                        .issuedDate(LocalDateTime.now())
-                        .meterNumber(meterNumber)
-                        .message(message)
-                        .build();
-
-                notificationRepository.save(notification);
+                String email = customer.getProfile().getEmail();
+                String firstName = customer.getProfile().getFirstName();
 
                 try {
                     Map<String, Object> vars = new HashMap<>();
-                    vars.put("message", message);
+                    vars.put("message", notification.getMessage());
 
                     emailService.sendEmail(
-                            customer.getProfile().getEmail(),
-                            customer.getProfile().getFirstName(),
+                            email,
+                            firstName,
                             "Your Electricity Token is Expiring",
                             IEmailTemplate.NOTIFICATION,
                             vars
                     );
+
+                    log.info("✅ Email sent to {} for meter {}", email, meterNumber);
                 } catch (Exception e) {
-                    throw new RuntimeException("Failed to send notification: " + e.getMessage());
+                    log.error("❌ Failed to send email to {}: {}", email, e.getMessage());
                 }
             });
-        }
+    }
 
     }
 }

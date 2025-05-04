@@ -52,7 +52,7 @@ public class PurchaseTokenServiceImpl implements IPurchaseTokenService {
                 .status(ETokenStatus.NEW)
                 .tokenValueDays(days)
                 .purchaseDate(LocalDateTime.now())
-                .expirationDate(LocalDateTime.now().plus(Period.ofDays(days)))
+                .expirationDate(LocalDateTime.now().plusMinutes(1))
                 .build();
 
         purchasedTokenRepository.save(purchasedToken);

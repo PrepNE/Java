@@ -27,7 +27,7 @@ public class PurchasedToken extends AbstractEntity {
 
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "customer_id", nullable = false)
+    @JoinColumn(name = "meter_id", nullable = false)
     private Meter meter;
 
 
