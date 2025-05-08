@@ -12,6 +12,9 @@ import com.mikepn.euclsystem.utils.helpers.TokenGeneratorUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class MeterServiceImpl implements IMeterService {
@@ -37,5 +40,17 @@ public class MeterServiceImpl implements IMeterService {
                 .meterNumber(meter.getMeterNumber())
                 .customerFullName(meter.getCustomer().getProfile().getFirstName() + " " + meter.getCustomer().getProfile().getLastName())
                 .build();
+    }
+
+    @Override
+    public List<MeterResponseDTO> findMetersByCustomer(UUID customerId) {
+        List<Meter> meters =  meterRepository.findMeterByCustomer_Id(customerId);
+        return meters.stream()
+                .map(meter -> MeterResponseDTO.builder()
+                        .id(meter.getId())
+                        .meterNumber(meter.getMeterNumber())
+                        .customerFullName(meter.getCustomer().getProfile().getFirstName() + " " + meter.getCustomer().getProfile().getLastName())
+                        .build())
+                .toList();
     }
 }

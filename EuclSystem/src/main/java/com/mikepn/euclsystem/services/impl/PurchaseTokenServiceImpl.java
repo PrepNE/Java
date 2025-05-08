@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.Period;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -64,5 +65,19 @@ public class PurchaseTokenServiceImpl implements IPurchaseTokenService {
                 .tokenValueInDays(purchasedToken.getTokenValueDays())
                 .purchaseDate(purchasedToken.getPurchaseDate())
                 .build();
+    }
+
+    @Override
+    public List<PurchaseTokenResponseDTO> getAllTokensByMeterNumber(String meterNumber) {
+        List<PurchasedToken> tokens = purchasedTokenRepository.findByMeter_MeterNumber(meterNumber);
+        return tokens.stream()
+                .map(token ->PurchaseTokenResponseDTO.builder()
+                        .meterNumber(token.getMeter().getMeterNumber())
+                        .token(token.getToken())
+                        .amount(token.getAmount())
+                        .tokenValueInDays(token.getTokenValueDays())
+                        .purchaseDate(token.getPurchaseDate())
+                        .build())
+                .toList();
     }
 }
