@@ -1,6 +1,8 @@
 package com.mikepn.euclsystem.config;
 
 
+import com.mikepn.euclsystem.handler.CustomAccessDeniedHandler;
+import com.mikepn.euclsystem.handler.CustomAuthenticationEntryPoint;
 import com.mikepn.euclsystem.security.jwt.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -27,6 +29,8 @@ public class SecurityConfig {
     private final JwtAuthFilter jwtFilter;
     private final AuthenticationProvider authenticationProvider;
     private final LogoutHandler logoutHandler;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
 
 
     @Bean
@@ -52,6 +56,10 @@ public class SecurityConfig {
                                         "/actuator/**"
                                 ).permitAll()
                                 .anyRequest().authenticated()
+                )
+                .exceptionHandling(exceptions -> exceptions
+                        .accessDeniedHandler(accessDeniedHandler)
+                        .authenticationEntryPoint(authenticationEntryPoint)
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)

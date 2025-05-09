@@ -1,6 +1,8 @@
 package com.mikepn.vehiclemanagementsystem.config;
 
 
+import com.mikepn.vehiclemanagementsystem.handler.CustomAccessDeniedHandler;
+import com.mikepn.vehiclemanagementsystem.handler.CustomAuthenticationEntryPoint;
 import com.mikepn.vehiclemanagementsystem.security.jwt.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -27,6 +29,8 @@ public class SecurityConfig {
     private final JwtAuthFilter jwtFilter;
     private final AuthenticationProvider authenticationProvider;
     private final LogoutHandler logoutHandler;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
 
     @Bean
@@ -52,6 +56,10 @@ public class SecurityConfig {
                                         "/actuator/**"
                                 ).permitAll()
                                 .anyRequest().authenticated()
+                )
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint(authenticationEntryPoint)
+                        .accessDeniedHandler(accessDeniedHandler)
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)

@@ -109,5 +109,24 @@ public class GlobalExceptionHandler {
                 );
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ExceptionResponse> handleValidationException(MethodArgumentNotValidException exp) {
+        Set<String> errors = new HashSet<>();
+        exp.getBindingResult().getAllErrors().forEach(error -> {
+            var errorMessage = error.getDefaultMessage();
+            errors.add(errorMessage);
+        });
+
+        return ResponseEntity
+                .status(BAD_REQUEST)
+                .body(
+                        ExceptionResponse.builder()
+                                .businessErrorDescription("Validation failed")
+                                .validationErrors(errors)
+                                .build()
+                );
+    }
+
+
 
 }

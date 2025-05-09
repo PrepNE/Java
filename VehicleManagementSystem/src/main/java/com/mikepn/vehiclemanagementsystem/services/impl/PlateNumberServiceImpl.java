@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -39,5 +40,10 @@ public class PlateNumberServiceImpl implements IPlateNumberService {
                 .build();
 
         return plateNumberRepository.save(plateNumber);
+    }
+
+    @Override
+    public List<PlateNumber> getAllPlateNumbers() {
+        return plateNumberRepository.findAll();
     }
 }

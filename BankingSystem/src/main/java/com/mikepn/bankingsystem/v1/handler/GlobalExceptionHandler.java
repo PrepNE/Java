@@ -10,13 +10,12 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.nio.file.AccessDeniedException;
 import java.util.HashSet;
 import java.util.Set;
 
 import static com.mikepn.bankingsystem.v1.enums.BusinessErrorCodes.*;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static org.springframework.http.HttpStatus.*;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -93,5 +92,38 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ExceptionResponse> handleAccessDeniedException(AccessDeniedException e) {
+        return ResponseEntity
+                .status(FORBIDDEN)
+                .body(
+                        ExceptionResponse.builder()
+                                .businessErrorCode(UNAUTHORIZED_ACTION.getCode())
+                                .businessErrorDescription(UNAUTHORIZED_ACTION.getDescription())
+                                .error("You are not authorized to perform this action")
+                                .build()
+                );
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ExceptionResponse> handleValidationException(MethodArgumentNotValidException exp) {
+        Set<String> errors = new HashSet<>();
+        exp.getBindingResult().getAllErrors().forEach(error -> {
+            var errorMessage = error.getDefaultMessage();
+            errors.add(errorMessage);
+        });
+
+        return ResponseEntity
+                .status(BAD_REQUEST)
+                .body(
+                        ExceptionResponse.builder()
+                                .businessErrorDescription("Validation failed")
+                                .validationErrors(errors)
+                                .build()
+                );
+    }
+
+
 
 }
