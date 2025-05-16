@@ -3,6 +3,7 @@ package com.mikepn.vehiclemanagementsystem.handler;
 
 
 import com.mikepn.vehiclemanagementsystem.exceptions.OperationNotPermittedException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -108,6 +109,20 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ExceptionResponse> handleDuplicateValueException(DataIntegrityViolationException e) {
+        return ResponseEntity
+                .status(CONFLICT)
+                .body(
+                        ExceptionResponse.builder()
+                                .businessErrorCode(DUPLICATE_ENTRY.getCode()) // Make sure this enum exists
+                                .businessErrorDescription(DUPLICATE_ENTRY.getDescription()) // Or use a static message
+                                .error("Duplicate value found: " + e.getMostSpecificCause().getMessage())
+                                .build()
+                );
+    }
+
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ExceptionResponse> handleValidationException(MethodArgumentNotValidException exp) {

@@ -14,7 +14,8 @@ public enum BusinessErrorCodes {
     ACCOUNT_LOCKED(302, FORBIDDEN, "User account is locked"),
     ACCOUNT_DISABLED(303, FORBIDDEN, "User account is disabled"),
     BAD_CREDENTIALS(304, FORBIDDEN, "Login and / or Password is incorrect"),
-    UNAUTHORIZED_ACTION(403,FORBIDDEN, "You are not authorized to perform this action");
+    UNAUTHORIZED_ACTION(403,FORBIDDEN, "You are not authorized to perform this action"),
+    DUPLICATE_ENTRY(305, CONFLICT, "Duplicate value exists")
     ;
 
     @Getter
