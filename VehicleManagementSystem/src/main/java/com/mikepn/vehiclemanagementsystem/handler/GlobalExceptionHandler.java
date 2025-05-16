@@ -3,17 +3,22 @@ package com.mikepn.vehiclemanagementsystem.handler;
 
 
 import com.mikepn.vehiclemanagementsystem.exceptions.OperationNotPermittedException;
+import com.mikepn.vehiclemanagementsystem.payload.ApiResponse;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
+import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.security.access.AccessDeniedException;
 
 
+import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -110,19 +115,6 @@ public class GlobalExceptionHandler {
                 );
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<ExceptionResponse> handleDuplicateValueException(DataIntegrityViolationException e) {
-        return ResponseEntity
-                .status(CONFLICT)
-                .body(
-                        ExceptionResponse.builder()
-                                .businessErrorCode(DUPLICATE_ENTRY.getCode()) // Make sure this enum exists
-                                .businessErrorDescription(DUPLICATE_ENTRY.getDescription()) // Or use a static message
-                                .error("Duplicate value found: " + e.getMostSpecificCause().getMessage())
-                                .build()
-                );
-    }
-
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ExceptionResponse> handleValidationException(MethodArgumentNotValidException exp) {
@@ -140,6 +132,23 @@ public class GlobalExceptionHandler {
                                 .validationErrors(errors)
                                 .build()
                 );
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiResponse<Object>> handleDataIntegrityViolation(DataIntegrityViolationException e) {
+        String message = "Duplicate field value violates unique constraint";
+
+        Throwable rootCause = e.getRootCause();
+        if (rootCause instanceof SQLException sqlEx) {
+            String sqlMessage = sqlEx.getMessage();
+            if (sqlMessage != null && sqlMessage.contains("users_national_id_key")) {
+                message = "A user with this national ID already exists";
+            } else if (sqlMessage != null && sqlMessage.contains("users_email_key")) {
+                message = "A user with this email already exists";
+            }
+        }
+
+        return ApiResponse.fail("Failed to create admin", HttpStatus.BAD_REQUEST, message);
     }
 
 

@@ -59,15 +59,11 @@ public class AuthenticationController {
     @Operation(summary = "Create admin account", description = "Creates a new administrator account")
     @PostMapping("/admin/register")
     public ResponseEntity<ApiResponse<UserResponseDTO>> createAdmin(@Valid @RequestBody CreateAdminDTO createAdminDTO) {
-        try {
+
             logger.debug("Creating admin account for: {}", createAdminDTO.getEmail());
             UserResponseDTO createdUser = userService.createAdmin(createAdminDTO);
             return ApiResponse.success("Admin created successfully", HttpStatus.CREATED, createdUser);
-        } catch (Exception e) {
-            logger.error("Admin creation failed for: {}", createAdminDTO.getEmail(), e);
-            ExceptionUtils.handleResponseException(e);
-            return ApiResponse.fail("Failed to create admin", HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+
     }
 
     @Operation(summary = "Initiate password reset", description = "Sends password reset instructions to email")
