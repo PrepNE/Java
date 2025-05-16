@@ -1,7 +1,5 @@
 package com.mikepn.vehiclemanagementsystem.handler;
 
-
-
 import com.mikepn.vehiclemanagementsystem.exceptions.OperationNotPermittedException;
 import com.mikepn.vehiclemanagementsystem.payload.ApiResponse;
 import jakarta.validation.ConstraintViolationException;
@@ -17,11 +15,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.security.access.AccessDeniedException;
 
-
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
-
 
 import static com.mikepn.vehiclemanagementsystem.enums.BusinessErrorCodes.*;
 import static org.springframework.http.HttpStatus.*;
@@ -30,108 +26,54 @@ import static org.springframework.http.HttpStatus.*;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(LockedException.class)
-    public ResponseEntity<ExceptionResponse> handleException(LockedException e) {
-        return ResponseEntity
-                .status(UNAUTHORIZED)
-                .body(
-                        ExceptionResponse.builder()
-                                .businessErrorCode(ACCOUNT_LOCKED.getCode())
-                                .businessErrorDescription(ACCOUNT_LOCKED.getDescription())
-                                .error(e.getMessage())
-                                .build()
-                );
+    public ResponseEntity<ApiResponse<Object>> handleLockedException(LockedException e) {
+        return ApiResponse.fail(
+                ACCOUNT_LOCKED.getDescription(),
+                UNAUTHORIZED,
+                e.getMessage()
+        );
     }
-
 
     @ExceptionHandler(DisabledException.class)
-    public ResponseEntity<ExceptionResponse> handleException(DisabledException e) {
-        return ResponseEntity
-                .status(UNAUTHORIZED)
-                .body(
-                        ExceptionResponse.builder()
-                                .businessErrorCode(ACCOUNT_DISABLED.getCode())
-                                .businessErrorDescription(ACCOUNT_DISABLED.getDescription())
-                                .error(e.getMessage())
-                                .build()
-                );
+    public ResponseEntity<ApiResponse<Object>> handleDisabledException(DisabledException e) {
+        return ApiResponse.fail(
+                ACCOUNT_DISABLED.getDescription(),
+                UNAUTHORIZED,
+                e.getMessage()
+        );
     }
-
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ExceptionResponse> handleException() {
-        return ResponseEntity
-                .status(UNAUTHORIZED)
-                .body(
-                        ExceptionResponse.builder()
-                                .businessErrorCode(BAD_CREDENTIALS.getCode())
-                                .businessErrorDescription(BAD_CREDENTIALS.getDescription())
-                                .error("Login and / or Password is incorrect")
-                                .build()
-                );
+    public ResponseEntity<ApiResponse<Object>> handleBadCredentialsException() {
+        return ApiResponse.fail(
+                BAD_CREDENTIALS.getDescription(),
+                UNAUTHORIZED,
+                "Login and / or Password is incorrect"
+        );
     }
-
 
     @ExceptionHandler(OperationNotPermittedException.class)
-    public ResponseEntity<ExceptionResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException exp) {
-        Set<String> errors = new HashSet<>();
-        exp.getBindingResult().getAllErrors()
-                .forEach(error -> {
-                    var errorMessage = error.getDefaultMessage();
-                    errors.add(errorMessage);
-                });
-
-        return ResponseEntity
-                .status(BAD_REQUEST)
-                .body(
-                        ExceptionResponse.builder()
-                                .validationErrors(errors)
-                                .build()
-                );
+    public ResponseEntity<ApiResponse<Object>> handleOperationNotPermittedException(OperationNotPermittedException e) {
+        return ApiResponse.fail(
+                "Operation not permitted",
+                FORBIDDEN,
+                e.getMessage()
+        );
     }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ExceptionResponse> handleException(Exception e) {
-        e.printStackTrace();
-        return ResponseEntity
-                .status(INTERNAL_SERVER_ERROR)
-                .body(
-                        ExceptionResponse.builder()
-                                .businessErrorDescription("Internal server error, please contact the admin")
-                                .error(e.getMessage())
-                                .build()
-                );
-    }
-
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ExceptionResponse> handleAccessDeniedException(AccessDeniedException e) {
-        return ResponseEntity
-                .status(FORBIDDEN)
-                .body(
-                        ExceptionResponse.builder()
-                                .businessErrorCode(UNAUTHORIZED_ACTION.getCode())
-                                .businessErrorDescription(UNAUTHORIZED_ACTION.getDescription())
-                                .error("You are not authorized to perform this action")
-                                .build()
-                );
-    }
-
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ExceptionResponse> handleValidationException(MethodArgumentNotValidException exp) {
+    public ResponseEntity<ApiResponse<Object>> handleValidationException(MethodArgumentNotValidException exp) {
         Set<String> errors = new HashSet<>();
         exp.getBindingResult().getAllErrors().forEach(error -> {
             var errorMessage = error.getDefaultMessage();
             errors.add(errorMessage);
         });
 
-        return ResponseEntity
-                .status(BAD_REQUEST)
-                .body(
-                        ExceptionResponse.builder()
-                                .businessErrorDescription("Validation failed")
-                                .validationErrors(errors)
-                                .build()
-                );
+        return ApiResponse.fail(
+                "Validation failed",
+                BAD_REQUEST,
+                errors
+        );
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
@@ -148,9 +90,25 @@ public class GlobalExceptionHandler {
             }
         }
 
-        return ApiResponse.fail("Failed to create admin", HttpStatus.BAD_REQUEST, message);
+        return ApiResponse.fail("Failed to create admin", BAD_REQUEST, message);
     }
 
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse<Object>> handleAccessDeniedException(AccessDeniedException e) {
+        return ApiResponse.fail(
+                UNAUTHORIZED_ACTION.getDescription(),
+                FORBIDDEN,
+                "You are not authorized to perform this action"
+        );
+    }
 
-
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse<Object>> handleGenericException(Exception e) {
+        e.printStackTrace();
+        return ApiResponse.fail(
+                "Internal server error, please contact the admin",
+                INTERNAL_SERVER_ERROR,
+                e.getMessage()
+        );
+    }
 }
