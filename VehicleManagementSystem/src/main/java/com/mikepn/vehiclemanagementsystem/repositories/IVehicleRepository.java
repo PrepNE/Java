@@ -19,4 +19,6 @@ public interface IVehicleRepository extends JpaRepository <Vehicle , UUID>{
     Optional<Vehicle> findVehicleByOwner_Profile_NationalId(String nationalId);
     Optional<Vehicle> findVehicleByCurrentPlate_PlateNumber(String plate);
     Optional<Vehicle> findVehicleByChassisNumber(String chassisNumber);
+
+    Optional<Vehicle> findVehicleByOwner_Profile_Email(String ownerProfileEmail);
 }

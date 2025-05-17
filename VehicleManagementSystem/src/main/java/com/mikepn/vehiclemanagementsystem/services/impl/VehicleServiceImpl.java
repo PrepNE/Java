@@ -102,6 +102,7 @@ public class VehicleServiceImpl implements IVehicleService {
         Vehicle vehicle = vehicleRepository.findVehicleByCurrentPlate_PlateNumber(keyword)
                 .or(() -> vehicleRepository.findVehicleByChassisNumber(keyword))
                 .or(() -> vehicleRepository.findVehicleByOwner_Profile_NationalId(keyword))
+                .or(() -> vehicleRepository.findVehicleByOwner_Profile_Email(keyword))
                 .orElseThrow(() -> new NotFoundException("Vehicle not found with keyword: " + keyword));
         return Mapper.getMapper().map(vehicle, VehicleResponseDTO.class) ;
     }

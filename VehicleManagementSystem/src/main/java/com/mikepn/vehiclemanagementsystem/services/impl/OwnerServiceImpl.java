@@ -40,27 +40,21 @@ public class OwnerServiceImpl implements IOwnerService {
 
     @Override
     public OwnerResponseDTO createOwner(CreateOwnerDTO dto) {
-        if(ownerRepository.existsByProfile_Email(dto.getEmail())){
+        if (ownerRepository.existsByProfile_Email(dto.getEmail())) {
             throw new BadRequestException("Owner already exists");
         }
 
-        try{
-            Role role = roleService.getRoleByName(ERole.STANDARD);
+        Role role = roleService.getRoleByName(ERole.STANDARD);
 
-            User user = ownerHelper.buildUserFromDto(dto,role , passwordEncoder);
-            user = userRepository.save(user);
+        User user = ownerHelper.buildUserFromDto(dto, role, passwordEncoder);
+        user = userRepository.save(user);
 
-            Owner owner = ownerHelper.buildOwner(user,dto);
-            ownerRepository.save(owner);
+        Owner owner = ownerHelper.buildOwner(user, dto);
+        ownerRepository.save(owner);
 
-            OwnerResponseDTO  response = OwnerMapper.mapToOwnerResponseDTO(user, owner);
-            return  response;
+        OwnerResponseDTO response = OwnerMapper.mapToOwnerResponseDTO(user, owner);
+        return response;
 
-
-
-        }catch (Exception e){
-            throw new AppException("Failed to create Owner:  " + e.getMessage());
-        }
     }
 
     @Override
@@ -83,7 +77,7 @@ public class OwnerServiceImpl implements IOwnerService {
         return ownerRepository.findOwnerByProfile_Email(keyword)
                 .or(() -> ownerRepository.findOwnerByProfile_NationalId(keyword))
                 .or(() -> ownerRepository.findOwnerByProfile_PhoneNumber(keyword))
-                .map(owner -> OwnerMapper.mapToOwnerResponseDTO(owner.getProfile() , owner))
+                .map(owner -> OwnerMapper.mapToOwnerResponseDTO(owner.getProfile(), owner))
                 .orElseThrow(() -> new NotFoundException("Owner not found with keyword: " + keyword));
     }
 
