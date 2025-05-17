@@ -31,6 +31,16 @@ public class OwnerController {
 
 
 
+    @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<OwnerResponseDTO>>  createOwner(@Valid @RequestBody CreateOwnerDTO dto) {
+        try{
+            OwnerResponseDTO response = ownerService.createOwner(dto);
+            return ApiResponse.success("Owner created successfully", HttpStatus.CREATED, response);
+        }catch (Exception e){
+            return ApiResponse.fail("Failed to create owner", HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
 
 
     @GetMapping("/{id}")
