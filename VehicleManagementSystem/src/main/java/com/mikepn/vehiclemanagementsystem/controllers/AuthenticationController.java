@@ -4,11 +4,14 @@ package com.mikepn.vehiclemanagementsystem.controllers;
 import com.mikepn.vehiclemanagementsystem.dtos.request.auth.LoginDTO;
 import com.mikepn.vehiclemanagementsystem.dtos.request.auth.PasswordResetDTO;
 import com.mikepn.vehiclemanagementsystem.dtos.request.auth.PasswordUpdateDTO;
+import com.mikepn.vehiclemanagementsystem.dtos.request.owner.CreateOwnerDTO;
 import com.mikepn.vehiclemanagementsystem.dtos.request.user.CreateAdminDTO;
 import com.mikepn.vehiclemanagementsystem.dtos.request.user.UserResponseDTO;
 import com.mikepn.vehiclemanagementsystem.dtos.response.auth.AuthResponse;
+import com.mikepn.vehiclemanagementsystem.dtos.response.owner.OwnerResponseDTO;
 import com.mikepn.vehiclemanagementsystem.payload.ApiResponse;
 import com.mikepn.vehiclemanagementsystem.services.IAuthService;
+import com.mikepn.vehiclemanagementsystem.services.IOwnerService;
 import com.mikepn.vehiclemanagementsystem.services.IUserService;
 import com.mikepn.vehiclemanagementsystem.utils.ExceptionUtils;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,6 +38,7 @@ public class AuthenticationController {
 
     private final IAuthService authService;
     private final IUserService userService;
+    private final IOwnerService ownerService;
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
 
     @Operation(summary = "User login", description = "Authenticates a user and returns access token")
@@ -65,6 +69,17 @@ public class AuthenticationController {
             return ApiResponse.success("Admin created successfully", HttpStatus.CREATED, createdUser);
 
     }
+
+    @PostMapping("/owner/register")
+    public ResponseEntity<ApiResponse<OwnerResponseDTO>>  createOwner(@Valid @RequestBody CreateOwnerDTO dto) {
+        try{
+            OwnerResponseDTO response = ownerService.createOwner(dto);
+            return ApiResponse.success("Owner created successfully", HttpStatus.CREATED, response);
+        }catch (Exception e){
+            return ApiResponse.fail("Failed to create owner", HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
 
     @Operation(summary = "Initiate password reset", description = "Sends password reset instructions to email")
     @PostMapping("/forgot-password")
