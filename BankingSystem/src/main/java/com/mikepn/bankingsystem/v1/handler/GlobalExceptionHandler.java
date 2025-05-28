@@ -2,6 +2,7 @@ package com.mikepn.bankingsystem.v1.handler;
 
 
 import com.mikepn.bankingsystem.v1.exceptions.OperationNotPermittedException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -123,6 +124,23 @@ public class GlobalExceptionHandler {
                                 .build()
                 );
     }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+public ResponseEntity<ExceptionResponse> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+    String errorMessage = "Duplicate entry violates unique constraint.";
+    if (e.getMessage() != null && e.getMessage().contains("national_id")) {
+        errorMessage = "User with this National ID already exists.";
+    }
+
+    return ResponseEntity
+            .status(BAD_REQUEST)
+            .body(
+                    ExceptionResponse.builder()
+                            .businessErrorDescription("Register failed")
+                            .error(errorMessage)
+                            .build()
+            );
+}
 
 
 

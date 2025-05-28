@@ -30,6 +30,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -55,7 +56,7 @@ public class AuthenticationServiceImpl implements IAuthService {
             throw new AppException("User with that email already exists");
         }
 
-        try {
+
             Role role = roleService.getRoleByName(ERole.USER);
 
             User user = User.builder()
@@ -64,6 +65,7 @@ public class AuthenticationServiceImpl implements IAuthService {
                     .email(registerUserDTO.getEmail())
                     .phoneNumber(registerUserDTO.getPhoneNumber())
                     .nationalId(registerUserDTO.getNationalId())
+                    .roles(Set.of(role))
                     .password(passwordEncoder.encode(registerUserDTO.getPassword()))
                     .build();
 
@@ -72,9 +74,6 @@ public class AuthenticationServiceImpl implements IAuthService {
             return Mapper.getMapper().map(user, UserResponseDTO.class);
 
 
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private Authentication authenticateUser(LoginDTO loginDTO) {

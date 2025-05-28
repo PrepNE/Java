@@ -73,23 +73,6 @@ public class GlobalExceptionHandler {
         );
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<ApiResponse<Object>> handleDataIntegrityViolation(DataIntegrityViolationException e) {
-        String message = "Duplicate field value violates unique constraint";
-
-        Throwable rootCause = e.getRootCause();
-        if (rootCause instanceof SQLException sqlEx) {
-            String sqlMessage = sqlEx.getMessage();
-            if (sqlMessage != null && sqlMessage.contains("users_national_id_key")) {
-                message = "A user with this national ID already exists";
-            } else if (sqlMessage != null && sqlMessage.contains("users_email_key")) {
-                message = "A user with this email already exists";
-            }
-        }
-
-        return ApiResponse.fail("Failed to create admin", BAD_REQUEST, message);
-    }
-
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiResponse<Object>> handleAccessDeniedException(AccessDeniedException e) {
         return ApiResponse.fail(
@@ -108,4 +91,33 @@ public class GlobalExceptionHandler {
                 e.getMessage()
         );
     }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiResponse<Object>> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+        String rootMessage = ex.getRootCause() != null ? ex.getRootCause().getMessage() : ex.getMessage();
+        String userMessage = "Data integrity violation";
+
+        if (rootMessage != null && rootMessage.contains("duplicate key value")) {
+            if (rootMessage.contains("national_id")) {
+                userMessage = "National ID already exists";
+            } else if (rootMessage.contains("email")) {
+                userMessage = "Email already exists";
+            } else {
+                userMessage = "Duplicate value violates unique constraint";
+            }
+            return ApiResponse.fail(
+                    DUPLICATE_ENTRY.getDescription(),
+                    CONFLICT,
+                    userMessage
+            );
+        }
+
+        return ApiResponse.fail(
+                DATA_INTEGRITY_VIOLATION.getDescription(),
+                CONFLICT,
+                rootMessage
+        );
+    }
+
+
 }

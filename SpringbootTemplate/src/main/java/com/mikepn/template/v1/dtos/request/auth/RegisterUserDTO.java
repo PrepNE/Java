@@ -5,18 +5,19 @@ import com.mikepn.template.v1.annotations.ValidPassword;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-
 
 
 @Data
 public class RegisterUserDTO {
 
 
-    @Schema(example = "John")
     @NotBlank(message = "First name cannot be blank")
+    @Pattern(regexp = "^[A-Za-z].*", message = "First name must start with a letter")
     private String firstName;
+
 
     @Schema(example = "Doe")
     @NotBlank(message = "Last name cannot be blank")
