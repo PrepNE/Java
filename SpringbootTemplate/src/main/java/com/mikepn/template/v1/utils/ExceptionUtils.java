@@ -1,6 +1,6 @@
 package com.mikepn.template.v1.utils;
 
-import com.mikepn.template.exceptions.*;
+
 import com.mikepn.template.v1.exceptions.BadRequestException;
 import com.mikepn.template.v1.exceptions.ConflictException;
 import com.mikepn.template.v1.exceptions.InternalServerErrorException;

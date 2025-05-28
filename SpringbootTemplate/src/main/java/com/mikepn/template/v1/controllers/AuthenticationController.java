@@ -59,12 +59,9 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<UserResponseDTO>> register(@Valid @RequestBody RegisterUserDTO dto){
-        try{
+
             UserResponseDTO response = authService.register(dto);
             return ApiResponse.success("User registered successfully", HttpStatus.OK, response);
-        } catch (Exception e) {
-            return ApiResponse.fail("Register failed", HttpStatus.BAD_REQUEST, e.getMessage());
-        }
 
     }
 
